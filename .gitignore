@@ -4,5 +4,7 @@ pog_cuda_miner
 mine.log
 mine.pid
 stats.json
+personal-log.json
+generations/
 package-lock.json
 *.o

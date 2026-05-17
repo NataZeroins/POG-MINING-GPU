@@ -10,7 +10,9 @@ This miner:
 - searches valid nonces on an NVIDIA GPU,
 - verifies the GPU result again in JavaScript before submit,
 - submits `mine(uint256 nonce)` when gas is below your configured cap,
-- writes live counters to `stats.json`.
+- writes live counters to `stats.json`,
+- mirrors the site’s new **personal log** concept to `personal-log.json`,
+- saves a deterministic local **generation** SVG for each confirmed mine.
 
 ## Safety
 
@@ -103,6 +105,9 @@ FIXED_PRIORITY_GWEI=0.229875685
 
 BATCH=4294967296
 STATS_FILE=./stats.json
+PERSONAL_LOG_FILE=./personal-log.json
+GENERATION_DIR=./generations
+SAVE_GENERATION_SVG=true
 ```
 
 Important fields:
@@ -115,6 +120,9 @@ Important fields:
 - `FIXED_PRIORITY_GWEI` — EIP-1559 `maxPriorityFeePerGas`.
 - `BATCH` — GPU nonce search range per CUDA run.
 - `STATS_FILE` — where runtime stats are written.
+- `PERSONAL_LOG_FILE` — local per-wallet mine history, similar to the site’s personal log.
+- `GENERATION_DIR` — where generated local SVG art files are saved.
+- `SAVE_GENERATION_SVG` — set `false` to disable SVG generation.
 
 If estimated tx cost is above `MAX_FEE_USD`, the script skips submit and keeps mining/checking.
 
@@ -142,6 +150,34 @@ Stop:
 kill $(cat mine.pid)
 # or
 pkill -f 'node gpu_mine.js'
+```
+
+## Generation + personal log
+
+`mintpog.com/mine` now has two extra UI panels:
+
+- **generation** — after a successful mine, the browser uses the nonce + miner address as a deterministic seed and renders a unique image.
+- **personal log** — the current session’s successful mines, showing block number, reward, and tx link.
+
+This CLI miner cannot perfectly reproduce the site’s browser AI renderer in Node/CUDA, but it now captures the same useful data after every confirmed tx:
+
+- `personal-log.json` — newest-first list of confirmed mines.
+- `generations/pog-<block>-<nonce>.svg` — deterministic local SVG art derived from nonce + miner.
+- `stats.json.lastMine` — latest confirmed mine metadata.
+
+Example `personal-log.json` entry:
+
+```json
+{
+  "ts": "2026-05-17T14:30:00.000Z",
+  "miner": "0x...",
+  "nonce": "123456789",
+  "rewardHuman": "100.0",
+  "epoch": "12345",
+  "blockNumber": 22400000,
+  "txHash": "0x...",
+  "generationFile": "generations/pog-22400000-123456789.svg"
+}
 ```
 
 ## Stats output
@@ -183,3 +219,5 @@ Meanings:
 - `gpu_mine.js` — contract state reader, JS verifier, tx submitter, stats writer.
 - `.env.example` — config template.
 - `start.sh` — simple foreground launcher.
+- `personal-log.json` — runtime mine history, ignored by git.
+- `generations/` — runtime generated SVG art, ignored by git.
