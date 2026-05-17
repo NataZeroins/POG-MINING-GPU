@@ -1,0 +1,1 @@
+{"scripts":{"mine":"node gpu_mine.js"},"dependencies":{"dotenv":"^17.4.2","ethers":"^5.7.2"}}

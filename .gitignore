@@ -1,0 +1,8 @@
+.env
+node_modules/
+pog_cuda_miner
+mine.log
+mine.pid
+stats.json
+package-lock.json
+*.o
