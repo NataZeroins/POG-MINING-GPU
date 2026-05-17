@@ -39,8 +39,8 @@ npm -v
 ## Quick start
 
 ```bash
-git clone <your-repo-url>
-cd pog-gpu-miner
+git clone https://github.com/NataZeroins/POG-MINING-GPU.git
+cd POG-GPU-MINING
 npm install
 cp .env.example .env
 nano .env
